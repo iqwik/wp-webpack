@@ -10,6 +10,8 @@ wp-content/upgrade
 wp-content/languages
 wp-content/themes/*
 wp-content/themes/iqwik/assets/public/js
+wp-content/themes/iqwik/style.css
+wp-content/themes/iqwik/version.php
 !.babelrc
 !.editconfig
 !.gitignore
