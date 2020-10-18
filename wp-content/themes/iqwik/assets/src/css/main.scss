@@ -1,0 +1,16 @@
+$color: red;
+$bold: bold;
+
+h1 {
+  color: $color;
+}
+.test {
+  font-size: 16px;
+  font-weight: $bold;
+}
+.img {
+  background: url('../../public/img/instyle/jacksparrow.jpg') no-repeat;
+  width: 200px;
+  height: 200px;
+  background-size: cover;
+}

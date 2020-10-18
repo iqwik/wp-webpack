@@ -8,7 +8,7 @@ wp-content/plugins
 wp-content/uploads
 wp-content/upgrade
 wp-content/languages
-wp-content/themes
+wp-content/themes/*
 !.babelrc
 !.editconfig
 !.gitignore
