@@ -4,6 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ReplaceInFileWebpackPlugin = require('replace-in-file-webpack-plugin');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 
+const localhost = 'http://novagric.loc';
 const themePath = path.join(__dirname, 'wp-content/themes/iqwik');
 const jsPath = path.join(themePath, '/assets/src/js/index.js');
 const publicFolder = 'assets/public'
@@ -64,13 +65,13 @@ module.exports = (env, argv) => {
     if (isDev) {
         plugins = [...plugins, new BrowserSyncPlugin({
             files: '**/*.php',
-            proxy: 'http://novagric.loc'
+            proxy: localhost
         })];
     }
 
     return {
         context: themePath,
-        entry: { app: jsPath },
+        entry: { main: jsPath },
         output: {
             path: prodPath,
             filename: 'js/[name].js',
