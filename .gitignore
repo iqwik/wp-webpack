@@ -9,6 +9,7 @@ wp-content/uploads
 wp-content/upgrade
 wp-content/languages
 wp-content/themes/*
+wp-content/themes/iqwik/assets/public/js
 !.babelrc
 !.editconfig
 !.gitignore
