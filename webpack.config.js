@@ -1,14 +1,13 @@
-const path = require('path');
-const webpack = require('webpack');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const ReplaceInFileWebpackPlugin = require('replace-in-file-webpack-plugin');
-const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+const path = require('path')
+const webpack = require('webpack')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const ReplaceInFileWebpackPlugin = require('replace-in-file-webpack-plugin')
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
 
-const localhost = 'http://novagric.loc';
-const themePath = path.join(__dirname, 'wp-content/themes/iqwik');
-const jsPath = path.join(themePath, '/assets/src/js/index.js');
-const publicFolder = 'assets/public'
-const prodPath = path.join(themePath, `/${publicFolder}/`);
+const localhost = 'http://site.loc'
+const themePath = path.join(__dirname, 'wp-content/themes/iqwik')
+const prodPath = path.join(themePath, '/assets/')
+const version = Number(new Date())
 
 module.exports = (env, argv) => {
     const isDev = argv.mode === 'development'
@@ -20,11 +19,16 @@ module.exports = (env, argv) => {
             loader: 'babel-loader',
         },
         {
+            test: /\.js$/,
+            enforce: "pre",
+            use: ['source-map-loader'],
+        },
+        {
             test: /\.(sa|sc|c)ss$/,
             exclude: /node_modules/,
             use: [
                 { loader: MiniCssExtractPlugin.loader, options: { hmr: isDev } },
-                { loader: 'css-loader' },
+                'css-loader',
                 'sass-loader',
                 'postcss-loader',
                 'resolve-url-loader',
@@ -37,46 +41,52 @@ module.exports = (env, argv) => {
                     loader: 'file-loader',
                     options: {
                         context: prodPath,
-                        name: '[path][name].[ext]?v=[hash:16]',
-                        publicPath: `./${publicFolder}/`
+                        name: `[path][name].[ext]?ver=${version}`,
+                        publicPath: './assets/'
                     },
                 },
                 'img-loader'
             ]
+        },
+        {
+            test: /\.(eot|svg|ttf|woff|woff2)$/,
+            use: {
+                loader: 'file-loader',
+                options: {
+                    context: prodPath,
+                    name: '[path][name].[ext]',
+                    publicPath: './assets/'
+                }
+            },
         }
-    ];
+    ]
 
     let plugins = [
-        new MiniCssExtractPlugin({ filename: '../../style.css' }),
+        new MiniCssExtractPlugin({ filename: '../style.css' }),
         new webpack.ProvidePlugin({
             $: 'jquery',
-            jQuery: 'jquery'
+            jQuery: 'jquery',
+            Slick: path.join(prodPath, '/src/js/vendor/mootools-core-1.6.0.js')
         }),
         new ReplaceInFileWebpackPlugin([{
             dir: themePath,
             files: ['version.php'],
             rules: [{
                 search: new RegExp(/\$bundle_version\s=\s\'\d+\'/, 'gi'),
-                replace: () => `$bundle_version = '${Number(new Date())}'`
+                replace: () => `$bundle_version = '${version}'`
             }]
         }]),
-    ];
+    ]
 
-    if (isDev) {
-        plugins = [...plugins, new BrowserSyncPlugin({
-            files: '**/*.php',
-            proxy: localhost
-        })];
-    }
-
-    return {
+    const config = {
         context: themePath,
-        entry: { main: jsPath },
+        entry: {
+            main: path.join(prodPath, '/src/js/index.js')
+        },
         output: {
             path: prodPath,
             filename: 'js/[name].js',
         },
-        // devtool: isDev ? 'cheap-eval-source-map' : false,
         resolve: {
             modules: [__dirname, 'node_modules'],
             extensions: ['.js'],
@@ -85,4 +95,16 @@ module.exports = (env, argv) => {
         plugins,
         optimization: { minimize: !isDev }
     }
+    
+    if (isDev) {
+        config.plugins = [...config.plugins, new BrowserSyncPlugin({
+            files: '**/*.php',
+            proxy: localhost
+        })]
+        config.watch = true
+        config.devtool = 'inline-cheap-source-map'
+        config.watchOptions = { ignored: ['node_modules/**'] }
+    }
+
+    return config
 }
