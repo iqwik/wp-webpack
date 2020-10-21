@@ -65,8 +65,7 @@ module.exports = (env, argv) => {
         new MiniCssExtractPlugin({ filename: '../style.css' }),
         new webpack.ProvidePlugin({
             $: 'jquery',
-            jQuery: 'jquery',
-            Slick: path.join(prodPath, '/src/js/vendor/mootools-core-1.6.0.js')
+            jQuery: 'jquery'
         }),
         new ReplaceInFileWebpackPlugin([{
             dir: themePath,
